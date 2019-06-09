@@ -1,70 +1,103 @@
-with open('words.txt') as file:
-    # words = []
-    # for line in file.readlines():
-    #     words.append(line.strip())
-    words = [line.strip() for line in file.readlines()]
+import random
+f = open("words.txt")
+all_words = (f.read()).upper()
+
+
+split_all_words = all_words.split()
 
 easy_words = []
-medium_words = []
+normal_words = []
 hard_words = []
-for word in words:
-    if len(word) >= 4 and len(word) <= 6:
+
+for word in split_all_words:
+    if len(word) >= 8:
+        hard_words.append(word)
+    elif len(word) >= 6 and len(word) <= 8:
+        normal_words.append(word)
+    elif len(word) <= 6 and len(word) >= 4:
         easy_words.append(word)
 
-    if len(word) >= 6 and len(word) <= 8:
-        medium_words.append(word)
+def guess_taker(input):
+    difficulty_selector = input("Welcome to the Myster Word Game!\n\nPlease enter your difficulty level:\n\nEASY\nNORMAL\nHARD\n")
+    upper_case_difficulty = difficulty_selector.upper()
 
-    if len(word) >= 8 and len(word) <= 12:
-        hard_words.append(word)
-
-
-def get_difficulty():
-    """Ask user for level of difficulty (easy, medium, hard).
-    If they give a bad answer, keep asking them."""
-
-    while True:
-        difficulty = input("Enter difficulty (easy, medium, or hard): ")
-        if difficulty in ['easy', 'medium', 'hard']:
-            return difficulty
+    while upper_case_difficulty not in ["EASY", "NORMAL", "HARD"]:
+        print("INVALID ENTRY: Please try again!")
+        difficulty_selector = input("Welcome to the Myster Word Game!\n\nPlease enter your difficulty level: \n\nEASY\nNORMAL\nHARD\n")
+        upper_case_difficulty = difficulty_selector.upper()
 
 
-def get_difficulty_recursive():
-    """Ask user for level of difficulty (easy, medium, hard).
-    If they give a bad answer, keep asking them.
-    
-    Don't do this one -- recursive.
-    """
+    if upper_case_difficulty == "EASY":
+        word = random.choice(easy_words)
+    elif upper_case_difficulty == "NORMAL":
+        word = random.choice(normal_words)
+    elif upper_case_difficulty == "HARD":
+        word = random.choice(hard_words)
 
-    difficulty = input("Enter difficulty (easy, medium, or hard): ")
-    if difficulty in ['easy', 'medium', 'hard']:
-        return difficulty
+    word_match = word.replace("", " ")
+    word_match = word_match.strip()
 
-    return get_difficulty_recursive()
+    print("This word is",len(word),"characters long")
+    current_guesses= []
 
+    def display_letter(letter, guesses):
+        """
+        Conditionally display a letter. If the letter is already in
+        the list `guesses`, then return it. Otherwise, return "_".
+        """
+        if letter in guesses:
+            return letter
+        else:
+            return "_"
 
-def filter_words_by_difficulty(words, difficulty):
-    """
-    Given a list of words and a difficulty, filter
-    that list to the words that are the right length for
-    that difficulty and return the filtered list.
-    """
-    if difficulty == 'easy':
-        min_len = 4
-        max_len = 6
-    elif difficulty == 'medium':
-        min_len = 6
-        max_len = 8
+    # [display_letter(letter, current_guesses)
+    # for letter in word]
+
+    def print_word(word, guesses):
+        output_letters = []
+        for letter in word:
+            output_letters.append(display_letter(letter, guesses))
+        print(" ".join(output_letters))
+
+        
+    guess_counter = 8
+    print_word(word, current_guesses)
+    print("Lives remaining: ", guess_counter)
+    guess = input("Please input your letter guess: ").upper()
+
+    # while len(guess) != 1 and guess_counter > 0:
+    #     print("ERROR! Please enter one letter.\n")
+    #     guess = input("Please input your letter guess: ").upper()
+    #     guess_counter -= 1
+    #     print("Lives remaining: ", guess_counter)
+
+    while guess_counter > 0:
+        if len(guess) != 1:
+            print("ERROR! Please enter one letter.")
+            # print("Lives remaining: ", guess_counter)
+        if guess in word and len(guess) == 1:
+            print("Correct!", guess, "is in the word!")
+        if guess not in word and guess not in current_guesses:
+            print("Sorry,", guess, "is not in the word.")
+            guess_counter -= 1
+            # print("Lives remaining: ", guess_counter)
+        if guess in current_guesses:
+            print("INVALID ENTRY! Already been guessed!")
+            # print("Lives remaining: ", guess_counter)
+        if guess not in current_guesses and len(guess) == 1:
+            current_guesses.append(guess)
+        if guess_counter > 0:
+            print_word(word, current_guesses)
+            print("Current guesses: ", current_guesses)
+            print("Lives remaining: ", guess_counter, "\n")
+            guess = input("Please input your letter guess:").upper()
+    print("GAME OVER! The word was", word.upper())
+    end_game = input("Play again? Type Yes or No. ")
+    end_game = end_game.lower()
+
+    if end_game == "yes":
+        guess_taker(input)
     else:
-        min_len = 8
-        max_len = 45
+        print("Good-bye!")
 
-    return [
-        word  # collect word
-        for word in words  # iterate over words
-        # select only words of a certain length
-        if len(word) >= min_len and len(word) <= max_len
-    ]
-
-
-print(len(words))
-print(words[:10])
+guess_taker(input)
