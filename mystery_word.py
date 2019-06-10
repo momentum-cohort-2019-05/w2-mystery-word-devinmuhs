@@ -1,6 +1,6 @@
 def guess_taker():
     import random
-    f = open("words.txt")
+    f = open("common_words.txt")
     all_words = (f.read()).upper()
 
 
@@ -18,29 +18,31 @@ def guess_taker():
             easy_words.append(word)
 
 
-    difficulty_selector = input("Welcome to the Myster Word Game!\n\nPlease enter your difficulty level:\n\nEASY\nNORMAL\nHARD\n")
+    difficulty_selector = input("Welcome to the Myster Word Game!\n\nPlease enter your difficulty level:\n\n1 - EASY\n2 - NORMAL\n3 - HARD\n>> ")
     upper_case_difficulty = difficulty_selector.upper()
 
-    while upper_case_difficulty not in ["EASY", "NORMAL", "HARD"]:
+    while upper_case_difficulty not in ["EASY", "NORMAL", "HARD", "1", "2", "3"]:
         print("INVALID ENTRY: Please try again!")
-        difficulty_selector = input("Welcome to the Myster Word Game!\n\nPlease enter your difficulty level: \n\nEASY\nNORMAL\nHARD\n")
+        difficulty_selector = input("Welcome to the Myster Word Game!\n\nPlease enter your difficulty level: \n\n1 - EASY\n2 - NORMAL\n3 - HARD\n>> ")
         upper_case_difficulty = difficulty_selector.upper()
 
 
-    if upper_case_difficulty == "EASY":
+    if upper_case_difficulty == "EASY" or upper_case_difficulty == 1:
         word = random.choice(easy_words)
-    elif upper_case_difficulty == "NORMAL":
+    elif upper_case_difficulty == "NORMAL" or upper_case_difficulty == 2:
         word = random.choice(normal_words)
-    elif upper_case_difficulty == "HARD":
+    elif upper_case_difficulty == "HARD" or upper_case_difficulty == 3:
         word = random.choice(hard_words)
-
-    word_match = word.replace("", " ")
-    word_match = word_match.strip()
+    
 
     print("This word is",len(word),"characters long")
     current_guesses= []
 
     def display_letter(letter, guesses):
+        """
+        Conditionally display a letter. If the letter is already in
+        the list `guesses`, then return it. Otherwise, return "_".
+        """
         if letter in guesses:
             return letter
         else:
@@ -51,9 +53,12 @@ def guess_taker():
         for letter in word:
             output_letters.append(display_letter(letter, guesses))
         return (" ".join(output_letters))
-        
+
+
+    word_match = word.replace("", " ")
+    word_match = word_match.strip()    
     guess_counter = 8
-    print(word_match)
+    # print(word_match)
     print("Lives remaining: ", guess_counter)
     guess = input("Please input your letter guess: ").upper()
 
@@ -61,7 +66,7 @@ def guess_taker():
     wordGuessed = False
 
     while guess_counter > 0 and wordGuessed is False:
-        if len(guess) != 1:
+        if len(guess) != 1 or guess.isalpha() == False:
             print("ERROR! Please enter one letter.")
         if guess in word and len(guess) == 1 and guess not in current_guesses:
             print("Correct!", guess, "is in the word!")
@@ -72,8 +77,9 @@ def guess_taker():
                     print(print_word(word, current_guesses))
                     print("Congrats! You beat the game! The word was", word)
                     break
-        if guess not in word and guess not in current_guesses:
+        if guess not in word and guess not in current_guesses and guess.isalpha() == True and len(guess) == 1:
             print("Sorry,", guess, "is not in the word.")
+            current_guesses.append(guess)
             guess_counter -= 1
         if guess in current_guesses:
             print("INVALID ENTRY! Already been guessed!")
@@ -81,14 +87,14 @@ def guess_taker():
             print(print_word(word, current_guesses))
             print("Current guesses: ", current_guesses)
             print("Lives remaining: ", guess_counter, "\n")
-            guess = input("Please input your letter guess:").upper()
+            guess = input("Please input your letter guess: ").upper()
 
     if guess_counter == 0:
         print("GAME OVER! The word was", word.upper())
-    end_game = input("Play again? Type Yes or No. ")
+    end_game = input("Play again?\n1- Yes\n2- No\n>> ")
     end_game = end_game.lower()
 
-    if end_game == "yes":
+    if end_game == "yes" or end_game == "y" or end_game == "1":
         guess_taker()
     else:
         print("Good-bye!")
