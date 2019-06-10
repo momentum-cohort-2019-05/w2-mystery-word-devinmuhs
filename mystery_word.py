@@ -18,20 +18,20 @@ def guess_taker():
             easy_words.append(word)
 
 
-    difficulty_selector = input("Welcome to the Myster Word Game!\n\nPlease enter your difficulty level:\n\n1 - EASY\n2 - NORMAL\n3 - HARD\n>> ")
+    difficulty_selector = input("Welcome to the Myster Word Game!\n\nPlease enter your difficulty level:\n\nEASY\nNORMAL\nHARD\n>> ")
     upper_case_difficulty = difficulty_selector.upper()
 
-    while upper_case_difficulty not in ["EASY", "NORMAL", "HARD", "1", "2", "3"]:
+    while upper_case_difficulty not in ["EASY", "NORMAL", "HARD"]:
         print("INVALID ENTRY: Please try again!")
-        difficulty_selector = input("Welcome to the Myster Word Game!\n\nPlease enter your difficulty level: \n\n1 - EASY\n2 - NORMAL\n3 - HARD\n>> ")
+        difficulty_selector = input("Welcome to the Myster Word Game!\n\nPlease enter your difficulty level: \n\nEASY\nNORMAL\nHARD\n>> ")
         upper_case_difficulty = difficulty_selector.upper()
 
 
-    if upper_case_difficulty == "EASY" or upper_case_difficulty == 1:
+    if upper_case_difficulty == "EASY":
         word = random.choice(easy_words)
-    elif upper_case_difficulty == "NORMAL" or upper_case_difficulty == 2:
+    elif upper_case_difficulty == "NORMAL":
         word = random.choice(normal_words)
-    elif upper_case_difficulty == "HARD" or upper_case_difficulty == 3:
+    elif upper_case_difficulty == "HARD":
         word = random.choice(hard_words)
     
 
@@ -66,6 +66,8 @@ def guess_taker():
     wordGuessed = False
 
     while guess_counter > 0 and wordGuessed is False:
+        if guess in current_guesses:
+            print("INVALID ENTRY! Already been guessed!")
         if len(guess) != 1 or guess.isalpha() == False:
             print("ERROR! Please enter one letter.")
         if guess in word and len(guess) == 1 and guess not in current_guesses:
@@ -81,8 +83,7 @@ def guess_taker():
             print("Sorry,", guess, "is not in the word.")
             current_guesses.append(guess)
             guess_counter -= 1
-        if guess in current_guesses:
-            print("INVALID ENTRY! Already been guessed!")
+
         if guess_counter > 0:
             print(print_word(word, current_guesses))
             print("Current guesses: ", current_guesses)
